@@ -167,6 +167,7 @@ graph2 = dcc.Graph(figure=elevation_profile)
 # ----------------------------------------------------------------
 # Build a dash app
 app =dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
+server = app.server
 app.layout = html.Div([html.H1('Overview of route', style={'textAlign': 'center', 'color': 'Orange'}),
                        html.H2 (track_name, style={'textAlign': 'center', 'color': 'Orange'}),
                        html.Div(html.P("Using a dash to show information graphs on a loaded gpx file"), 

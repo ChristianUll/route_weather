@@ -118,6 +118,14 @@ for track in gpx.tracks:
 # Create DataFrame
 df = pd.DataFrame(segments_data)
 
+# create some additional track information that can be used to make the track information more colourful
+track_name = gpx.tracks[0].name
+total_km = int(round((df['CumulativeDistance'].iloc[-1]/1000), 0))
+max_height = int(round(df['Elevation'].max(), 0))
+
+
+
+
 
 # ----------------------------------------------------------------
 # Create the plots
@@ -159,20 +167,25 @@ graph2 = dcc.Graph(figure=elevation_profile)
 # ----------------------------------------------------------------
 # Build a dash app
 app =dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
-server = app.server
-app.layout = html.Div([html.H1('Overview of route', style={'textAlign': 'center', 'color': 'Orange'}), 
+app.layout = html.Div([html.H1('Overview of route', style={'textAlign': 'center', 'color': 'Orange'}),
+                       html.H2 (track_name, style={'textAlign': 'center', 'color': 'Orange'}),
                        html.Div(html.P("Using a dash to show information graphs on a loaded gpx file"), 
                                 style={'marginLeft': 50, 'marginRight': 25}),
-                       html.Div([html.Div('Graphs for the selected gpx track', 
-                                          style={'backgroundColor': 'Orange', 'color': 'white', 
-                                                 'width': '800px', 'marginLeft': '200', 'marginRight': '20'}),
+                       html.Div([
+                           html.Div([
+                                html.Table([
+                                    html.Tr([
+                                        html.Td(f'Total Distance: {total_km} km'),
+                                        html.Td(f'Maximum Height: {max_height} m')
+                                    ])
+                                ], style={'width': '100%', 'textAlign': 'center'})
+                            ]),
                                  graph1, graph2])
 
                     
 ])
 
 if __name__ == '__main__':
-     app.run_server(port=8095)
-
+     app.run_server(port=8097)
 # -----------------------------------------------------
 

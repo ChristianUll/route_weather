@@ -13,7 +13,7 @@ import pandas as pd
 from geopy.distance import geodesic
 from geopy.geocoders import Nominatim
 
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
 
 
 
@@ -26,14 +26,9 @@ import dash_bootstrap_components as dbc
 # File handling and requests
 import requests # for sending requests in order to receive weather information
 import os
-import json
+# import json
 import datetime
-from dotenv import load_dotenv
 
-# SQLalchemy
-from sqlalchemy import create_engine, types
-from sqlalchemy.dialects.postgresql import JSON as postgres_json
-from sqlalchemy_utils import database_exists, create_database
 # ----------------------------------------------------------------
 
 

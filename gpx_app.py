@@ -23,6 +23,9 @@ import dash
 from dash import Dash, html, dcc, dash_table
 import dash_bootstrap_components as dbc
 
+from dash.dependencies import Input, Output, State
+
+
 # File handling and requests
 import requests # for sending requests in order to receive weather information
 import os

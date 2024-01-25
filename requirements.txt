@@ -1,0 +1,9 @@
+dash==2.14.2
+gunicorn
+plotly==5.18.0
+dash-tools
+pandas==2.1.3
+dash_bootstrap_components==1.5.0
+gpxpy==1.6.2
+geopy==2.4.1
+requests==2.31.0 # for sending requests in order to receive weather information

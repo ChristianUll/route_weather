@@ -230,7 +230,8 @@ app.layout = html.Div([
             max=20,
             step=1,
             value=10
-        )
+        ),
+        graph2
     ])
 ])
 

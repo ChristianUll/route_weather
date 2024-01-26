@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 # plotly for easy to use plots
 import plotly.express as px
 import dash
-from dash import Dash, html, dcc, dash_table
+from dash import Dash, html, dcc, dash_table, callback
 import dash_bootstrap_components as dbc
 
 from dash.dependencies import Input, Output, State
@@ -134,9 +134,11 @@ max_height = int(round(df['Elevation'].max(), 0))
 
 # Create a map visualization of the tracks with colour indicator of slope
 
-# define the center of the map
+## define the center of the map
 lon_center = df['Longitude'].mean()
 lat_center = df['Latitude'].mean()
+zoom_factor = 7
+
 
 map_slope = px.scatter_mapbox(df, 
                         lat="Latitude", lon="Longitude", 
@@ -145,7 +147,8 @@ map_slope = px.scatter_mapbox(df,
                         color_continuous_midpoint=0,  # Set the midpoint of the color scale
                         range_color=(-10, 10),  # Set the range of values to be mapped to colors
                         
-                        zoom=7, center={'lat': lat_center, 'lon': lon_center}, 
+                        zoom=zoom_factor, 
+                        center={'lat': lat_center, 'lon': lon_center}, 
                         mapbox_style='open-street-map'
                                  )
 
@@ -154,6 +157,7 @@ map_slope.update_layout(title_text="Route Map with Slope",
                        paper_bgcolor="#DDDDDD")
 
 graph1 = dcc.Graph(figure=map_slope)
+map_slope.show() 
 # ----------------------------------------------------------------
 # create an elevation profile of the track
 
@@ -166,29 +170,71 @@ graph2 = dcc.Graph(figure=elevation_profile)
 # ----------------------------------------------------------------
 
 
-# ----------------------------------------------------------------
-# Build a dash app
-app =dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
+# Create Dash app
+app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 server = app.server
-app.layout = html.Div([html.H1('Overview of route', style={'textAlign': 'center', 'color': 'Orange'}),
-                       html.H2 (track_name, style={'textAlign': 'center', 'color': 'Orange'}),
-                       html.Div(html.P("Using a dash to show information graphs on a loaded gpx file"), 
-                                style={'marginLeft': 50, 'marginRight': 25}),
-                       html.Div([
-                           html.Div([
-                                html.Table([
-                                    html.Tr([
-                                        html.Td(f'Total Distance: {total_km} km'),
-                                        html.Td(f'Maximum Height: {max_height} m')
-                                    ])
-                                ], style={'width': '100%', 'textAlign': 'center'})
-                            ]),
-                                 graph1, graph2])
 
-                    
+# Assuming you have defined df, total_km, max_height, and track_name variables
+
+# Define initial zoom factor and center coordinates
+zoom_factor = 10
+lon_center = df['Longitude'].mean()
+lat_center = df['Latitude'].mean()
+
+# Create map figure
+map_slope = px.scatter_mapbox(df, 
+                        lat="Latitude", lon="Longitude", 
+                        color="SlopePercent",
+                        color_continuous_scale="Viridis",
+                        color_continuous_midpoint=0,
+                        range_color=(-10, 10),
+                        zoom=zoom_factor, 
+                        center={'lat': lat_center, 'lon': lon_center}, 
+                        mapbox_style='open-street-map'
+                        )
+
+map_slope.update_layout(title_text="Route Map with Slope",
+                       plot_bgcolor="#EEEEEE",
+                       paper_bgcolor="#DDDDDD")
+
+# Define callback function to update map zoom based on slider value
+@app.callback(
+    Output('graph1', 'figure'),
+    [Input('my-slider', 'value')]
+)
+
+#update the map according to the zoom factor from the slider
+def update_map_zoom(zoom_factor):
+    map_slope.update_layout(mapbox_zoom=zoom_factor)  # Update the map zoom level
+    return map_slope
+
+# Define layout
+app.layout = html.Div([
+    html.H1('Overview of route', style={'textAlign': 'center', 'color': 'Orange'}),
+    html.H2(track_name, style={'textAlign': 'center', 'color': 'Orange'}),
+    html.Div(html.P("Using a Dash app to show information graphs on a loaded GPX file"), 
+             style={'marginLeft': 50, 'marginRight': 25}),
+    html.Div([
+        html.Div([
+            html.Table([
+                html.Tr([
+                    html.Td(f'Total Distance: {total_km} km'),
+                    html.Td(f'Maximum Height: {max_height} m')
+                ])
+            ], style={'width': '100%', 'textAlign': 'center'})
+        ]),
+        dcc.Graph(id='graph1', figure=map_slope),
+        dcc.Slider(
+            id='my-slider',
+            min=1,
+            max=20,
+            step=1,
+            value=10
+        )
+    ])
 ])
 
+# Run the server
 if __name__ == '__main__':
-     app.run_server(port=8097)
-# -----------------------------------------------------
+    app.run_server(port=8097)
 

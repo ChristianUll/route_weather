@@ -41,7 +41,10 @@ import datetime
 # Parsing an existing file:
 # -------------------------
 
-gpx_file = open('Rosenheim_Bozen.gpx', 'r')
+# gpx_file = open('Rosenheim_Bozen.gpx', 'r')
+# gpx_file = open('Basel_Stuttgart.gpx', 'r')
+# gpx_file = open('Berlin_Hamburg.gpx', 'r')
+gpx_file = open('Leipzig_Wuerzburg.gpx', 'r')
 gpx = gpxpy.parse(gpx_file)
 
 # Define the expected avg speed (kmh)
